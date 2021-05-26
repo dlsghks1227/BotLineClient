@@ -2,8 +2,12 @@ import struct
 import time
 from NetworkManager import NetworkManager
 from SocketAddress import SocketAddress
+from Packet import *
 
 # https://docs.python.org/ko/3/library/struct.html
+
+HOST = '127.0.0.1'
+PORT = 8000
 
 
 if __name__ == "__main__":
@@ -11,20 +15,18 @@ if __name__ == "__main__":
         bindAddress = SocketAddress('0.0.0.0', 8001)
         network = NetworkManager(bindAddress)
 
-        test = bytearray(10)
-        print(test)
-        struct.pack_into('>H', test, 0, 2)
-        print(test)
-        struct.pack_into('>H', test, 2, 2)
-        print(test)
-
-        data = struct.unpack_from('>H', test, 0)
-        print(data)
-        data = struct.unpack_from('>H', test, 2)
-        print(data)
-
         while True:
-            network.processIncomingPackets()
+            isConnected = network.getIsConnected()
+            if isConnected == True:
+                network.processIncomingPackets()
+            else:
+                packet = OutputPacket()
+                serverAddress = SocketAddress(HOST, PORT)
+
+                packet.writeCommand(COMMAND.JETBOT_CONNECT)
+                network.sendTo(packet, serverAddress)
+
+            time.sleep(0.001)
 
     except KeyboardInterrupt:
         del network
