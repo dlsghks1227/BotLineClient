@@ -10,6 +10,9 @@ from Packet import *
 HOST = '127.0.0.1'
 PORT = 8000
 
+class MyInformation:
+    def __init__(self):
+        pass
 class BotLine:
     packetQueue = Queue()
 
@@ -24,10 +27,14 @@ class BotLine:
 
     def onUpdate(self):
         # 패킷 처리
+        self.getMyInformation()
         self.processIncomingPackets()
     
     def onDestory(self):
         del self.networkManager
+
+    def getMyInformation(self):
+        pass
 
     def processIncomingPackets(self):
         self.readIncomingPacketsIntoQueue()
@@ -47,8 +54,10 @@ class BotLine:
 
     def processPacket(self, inputPacket: InputPacket, address: SocketAddress):
         command = inputPacket.readCommand()
-
-        if command == MessageType.CONNECT_CHECK:
+        if command == MessageType.JETBOT_INFORMATION_REQUEST:
+            data = inputPacket.read('H', 4)
+            print(data)
             packet = OutputPacket()
-            packet.writeCommand(MessageType.CONNECT_CHECK)
+            packet.writeCommand(MessageType.JETBOT_INFORMATION_REQUEST)
+            packet.writeInformation(10)
             self.networkManager.sendTo(packet, address)
