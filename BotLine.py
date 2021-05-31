@@ -6,32 +6,77 @@ from SocketAddress import SocketAddress
 from NetworkManager import NetworkManager
 from Packet import *
 
-# from ina219 import *
 
 
 HOST = '14.44.60.68'
 PORT = 8000
 
-# class JetbotInformation:
-#     def __init__(self):
-#         self.ina219 = INA219(addr=0x41)
-#         self.voltage = 0.0
-
-#     def updateInformation(self):
-#         self.voltage = self.ina219.getBusVoltage_V()
-
-#     def getVoltage(self):
-#         return self.voltage
-
+'''
+from ina219 import *
+import subprocess
 class JetbotInformation:
     def __init__(self):
-        self.voltage = 10.0
+        self.ina219 = INA219(addr=0x41)
+        self.voltage = 0.0
+        self.cpu = 0.0
+        self.memory = 0.0
+        self.disk = 0.0
 
     def updateInformation(self):
-        self.voltage = 10.0
+        self.voltage = self.ina219.getBusVoltage_V()
+        self.cpu = self.loadCPUAverage()
+        self.memory = self.loadMemory()
+        self.disk = self.loadDisk()
+
+    def loadCPUAverage(self):
+        cmd = "top -bn1 | grep load | awk '{\"%.2f\", $(NF-2)}'"
+        return float(subprocess.check_output(cmd, shell=True))
+
+    def loadMemory(self):
+        cmd = "free -m | awk 'NR==2{printf \"%.2f\", $3*100/$2 }'"
+        return float(subprocess.check_output(cmd, shell=True))
+
+    def loadDisk(self):
+        cmd = "df -h | awk '$NF==\"/\"{printf \"%.2f\", $3 / $2 * 100}'"
+        return float(subprocess.check_output(cmd, shell=True))
 
     def getVoltage(self):
         return self.voltage
+    
+    def getCPU(self):
+        return self.cpu
+
+    def getMemory(self):
+        return self.memory
+
+    def getDisk(self):
+        return self.disk
+'''
+
+class JetbotInformation:
+    def __init__(self):
+        self.voltage = 0.0
+        self.cpu = 0.0
+        self.memory = 0.0
+        self.disk = 0.0
+
+    def updateInformation(self):
+        self.voltage = 10.01
+        self.cpu = 15.02
+        self.memory = 12.13
+        self.disk = 51.15
+
+    def getVoltage(self):
+        return self.voltage
+    
+    def getCPU(self):
+        return self.cpu
+
+    def getMemory(self):
+        return self.memory
+
+    def getDisk(self):
+        return self.disk
 
 class BotLine:
     packetQueue = Queue()
@@ -76,4 +121,7 @@ class BotLine:
             packet = OutputPacket()
             packet.writeCommand(MessageType.INFORMATION_REQUEST)
             packet.writeFloat(self.information.getVoltage())
+            packet.writeFloat(self.information.getCPU())
+            packet.writeFloat(self.information.getMemory())
+            packet.writeFloat(self.information.getDisk())
             self.networkManager.sendTo(packet, address)
