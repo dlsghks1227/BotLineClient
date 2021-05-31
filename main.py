@@ -8,7 +8,7 @@ from Packet import *
 
 
 if __name__ == "__main__":
-    botLine = BotLine('0.0.0.0', 8081)
+    botLine = BotLine('0.0.0.0', 8080)
     try:
         while True:
             botLine.onUpdate()
@@ -16,6 +16,4 @@ if __name__ == "__main__":
             time.sleep(0.001)
 
     except KeyboardInterrupt:
-        pass
-    finally:
         botLine.onDestory()
