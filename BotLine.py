@@ -6,15 +6,36 @@ from SocketAddress import SocketAddress
 from NetworkManager import NetworkManager
 from Packet import *
 
+# from ina219 import *
 
-HOST = '127.0.0.1'
+
+HOST = '14.44.60.68'
 PORT = 8000
 
-class MyInformation:
+# class JetbotInformation:
+#     def __init__(self):
+#         self.ina219 = INA219(addr=0x41)
+#         self.voltage = 0.0
+
+#     def updateInformation(self):
+#         self.voltage = self.ina219.getBusVoltage_V()
+
+#     def getVoltage(self):
+#         return self.voltage
+
+class JetbotInformation:
     def __init__(self):
-        pass
+        self.voltage = 10.0
+
+    def updateInformation(self):
+        self.voltage = 10.0
+
+    def getVoltage(self):
+        return self.voltage
+
 class BotLine:
     packetQueue = Queue()
+    information = JetbotInformation()
 
     def __init__(self, ip: str, port:int):
         self.networkManager = NetworkManager(SocketAddress(ip, port))
@@ -22,19 +43,16 @@ class BotLine:
     
     def connecting(self):
         packet = OutputPacket()
-        packet.writeCommand(MessageType.JETBOT_CONNECT)
+        packet.writeCommand(MessageType.CONNECT)
         self.networkManager.sendTo(packet, SocketAddress(HOST, PORT))
 
     def onUpdate(self):
         # 패킷 처리
-        self.getMyInformation()
+        self.information.updateInformation()
         self.processIncomingPackets()
     
     def onDestory(self):
         del self.networkManager
-
-    def getMyInformation(self):
-        pass
 
     def processIncomingPackets(self):
         self.readIncomingPacketsIntoQueue()
@@ -54,10 +72,8 @@ class BotLine:
 
     def processPacket(self, inputPacket: InputPacket, address: SocketAddress):
         command = inputPacket.readCommand()
-        if command == MessageType.JETBOT_INFORMATION_REQUEST:
-            data = inputPacket.read('H', 4)
-            print(data)
+        if command == MessageType.INFORMATION_REQUEST:
             packet = OutputPacket()
-            packet.writeCommand(MessageType.JETBOT_INFORMATION_REQUEST)
-            packet.writeInformation(10)
+            packet.writeCommand(MessageType.INFORMATION_REQUEST)
+            packet.writeFloat(self.information.getVoltage())
             self.networkManager.sendTo(packet, address)

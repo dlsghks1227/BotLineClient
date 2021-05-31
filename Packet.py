@@ -1,41 +1,53 @@
 import struct
 
+OBJECTTYPE_JETBOT = 1
 
 class MessageType:
-    JETBOT_CONNECT = 0
-    JETBOT_DISCONNECT = 1
+    CONNECT = 0
+    DISCONNECT = 1
 
-    JETBOT_INFORMATION_REQUEST = 2
+    INFORMATION_REQUEST = 2
 
-    CONTROL_CONNECT = 3
-    CONTROL_DISCONNECT = 4
-
-    CONTROLLER_JETOBT_INFORMATION_REQUEST = 5,
-
-    CONNECT_CHECK = 6
+    CONNECT_CHECK = 3
 
 class Packet:
     data = bytearray(0)
+    packetHead = 0
 
     def getData(self):
         return self.data
 
 class OutputPacket(Packet):
     def __init__(self):
-        self.packetHead = 0
+        self.data = bytearray(1)
+        self.packetHead = 1
+        struct.pack_into('!B', self.data, 0, OBJECTTYPE_JETBOT)
 
     def writeCommand(self, messageType: MessageType):
-        self.data = bytearray(2)
-        self.packetHead = 1
-        struct.pack_into('!B', self.data, 0, messageType)
-    
-    def writeInformation(self, voltage):
-        self.write(voltage, 'H', 4)
+        self.writeUInt8(messageType)
 
-    def write(self, data, dataType, size):
+    def write(self, data, dataType: str, size: int):
         self.data = self.data + bytearray(size)
-        struct.pack_into('!' + dataType, self.data, self.packetHead, data)
-        self.packetHead += (size - 1)
+        struct.pack_into('<' + dataType, self.data, self.packetHead, data)
+        self.packetHead += size
+
+    def writeUInt8(self, data: int):
+        self.write(data, 'B', 1)
+
+    def writeUInt16(self, data: int):
+        self.write(data, 'H', 2)
+    
+    def writeUInt32(self, data: int):
+        self.write(data, 'I', 4)
+
+    def writeUInt64(self, data: int):
+        self.write(data, 'Q', 8)
+
+    def writeFloat(self, data: float):
+        self.write(data, 'f', 4)
+    
+    def writeDouble(self, data: float):
+        self.write(data, 'd', 8)
 
 
 class InputPacket(Packet):
@@ -44,10 +56,27 @@ class InputPacket(Packet):
         self.packetHead = 0
 
     def readCommand(self):
-        self.packetHead += 1
-        return struct.unpack_from('>B', self.data, 0)[0]
-    
-    def read(self, dataType, size):
-        data = struct.unpack_from('<' + dataType, self.data, self.packetHead)[0]
-        self.packetHead += (size - 1)
+        return self.readUInt8()
+
+    def read(self, dataType: str, size: int):
+        data = struct.unpack_from('!' + dataType, self.data, self.packetHead)[0]
+        self.packetHead += size
         return data
+
+    def readUInt8(self):
+        return self.read('B', 1)
+    
+    def readUInt16(self):
+        return self.read('H', 2)
+    
+    def readUInt32(self):
+        return self.read('I', 4)
+
+    def readUInt64(self):
+        return self.read('Q', 8)
+
+    def readFloat(self):
+        return self.read('f', 4)
+    
+    def readDouble(self):
+        return self.read('d', 8)
