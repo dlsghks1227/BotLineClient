@@ -43,7 +43,7 @@ class StateUpdateThread(threading.Thread):
         self.isRunning = isRunning
 
     def loadCPUAverage(self):
-        cmd = "top -bn1 | grep load | awk '{\"%.2f\", $(NF-2)}'"
+        cmd = "top -bn1 | grep load | awk '{printf \"%.2f\", $(NF-2)}'"
         return float(subprocess.check_output(cmd, shell=True))
 
     def loadMemory(self):
@@ -189,6 +189,12 @@ class BotLine:
         self.information = JetbotInformation()
         self.stateThread = StateUpdateThread()
         self.stateThread.start()
+
+        self.isConnected = False
+        self.timeout = 0.0
+        self.maxTimeout = 5.0
+        self.cycleTime = 0.0
+        self.connectingDelay = 2.0
     
     def connecting(self):
         packet = OutputPacket()
@@ -199,7 +205,21 @@ class BotLine:
         # 패킷 처리
         self.information.updateInformation(self.stateThread.getState())
         self.processIncomingPackets()
-    
+
+        if self.isConnected is False:
+            self.cycleTime += time.process_time()
+            if self.cycleTime >= self.connectingDelay:
+                print("re-send connect packet")
+                self.connecting()
+                self.cycleTime = 0.0
+        else:
+            self.cycleTime = 0.0
+            self.timeout += time.process_time()
+            if self.timeout >= self.maxTimeout:
+                self.isConnected = False
+                self.connecting()
+                self.timeout = 0.0
+
     def onDestory(self):
         self.stateThread.setIsRunning(False)
         self.stateThread.join()
@@ -212,6 +232,9 @@ class BotLine:
     def readIncomingPacketsIntoQueue(self):
         data = self.networkManager.receiveFrom()
         if data is not None:
+            if data == -1:
+                self.isConnected = False
+                return
             self.packetQueue.put(data)
 
     def processQueuedPackets(self):
@@ -222,8 +245,17 @@ class BotLine:
             self.processPacket(InputPacket(packet), SocketAddress(address[0], address[1]))
 
     def processPacket(self, inputPacket: InputPacket, address: SocketAddress):
+        print(self.timeout)
+        self.timeout = 0.0
         command = inputPacket.readCommand()
-        if command == MessageType.INFORMATION_REQUEST:
+        if command == MessageType.CONNECT:
+            print("connect")
+            self.isConnected = True
+        elif command == MessageType.DISCONNECT:
+            print("disconnect")
+            self.isConnected = False
+            self.connecting()
+        elif command == MessageType.INFORMATION_REQUEST:
             packet = OutputPacket()
 
             packet.writeCommand(MessageType.INFORMATION_REQUEST)

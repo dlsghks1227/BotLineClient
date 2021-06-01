@@ -24,5 +24,7 @@ class NetworkManager:
             data, address = self.udpSocket.recvfrom(self.bufferSize)
             if len(data) >= 0:
                 return data, address
+        except ConnectionResetError:
+            return -1
         except BlockingIOError:
             return None

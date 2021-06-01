@@ -7,8 +7,9 @@ class MessageType:
     DISCONNECT = 1
 
     INFORMATION_REQUEST = 2
+    CONTROL = 3
 
-    CONNECT_CHECK = 3
+    CONNECT_CHECK = 4
 
 class Packet:
     data = bytearray(0)
