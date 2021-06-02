@@ -9,175 +9,11 @@ from SocketAddress import SocketAddress
 from NetworkManager import NetworkManager
 from Packet import *
 
-
+from TestInformation import StateUpdateThread, JetbotInformation
+#from JetbotInformation import StateUpdateThread, JetbotInformation
 
 HOST = '127.0.0.1'
 PORT = 8000
-
-'''
-from ina219 import *
-import subprocess
-
-class StateUpdateThread(threading.Thread):
-    def __init__(self):
-        super().__init__()
-        self.ina219 = INA219(addr=0x41)
-        self.voltage = 0.0
-        self.cpu = 0.0
-        self.memory = 0.0
-        self.disk = 0.0
-        self.isRunning = True
-    
-    def run(self):
-        while self.isRunning is True:
-            self.voltage = self.ina219.getBusVoltage_V()
-            self.cpu = self.loadCPUAverage()
-            self.memory = self.loadMemory()
-            self.disk = self.loadDisk()
-            time.sleep(0.5)
-
-    def getState(self):
-        return self.voltage, self.cpu, self.memory, self.disk
-
-    def setIsRunning(self, isRunning):
-        self.isRunning = isRunning
-
-    def loadCPUAverage(self):
-        cmd = "top -bn1 | grep load | awk '{printf \"%.2f\", $(NF-2)}'"
-        return float(subprocess.check_output(cmd, shell=True))
-
-    def loadMemory(self):
-        cmd = "free -m | awk 'NR==2{printf \"%.2f\", $3*100/$2 }'"
-        return float(subprocess.check_output(cmd, shell=True))
-
-    def loadDisk(self):
-        cmd = "df -h | awk '$NF==\"/\"{printf \"%.2f\", $3 / $2 * 100}'"
-        return float(subprocess.check_output(cmd, shell=True))
-
-class JetbotInformation:
-    def __init__(self):
-        self.voltage = 0.0
-        self.cpu = 0.0
-        self.memory = 0.0
-        self.disk = 0.0
-
-        self.leftWheelValue = 0
-        self.rightWheelValue = 0
-        self.speed = 0
-
-    def updateInformation(self, state: tuple):
-        self.voltage, self.cpu, self.memory, self.disk = state
-
-    def getVoltage(self):
-        return self.voltage
-    
-    def getCPU(self):
-        return self.cpu
-
-    def getMemory(self):
-        return self.memory
-
-    def getDisk(self):
-        return self.disk
-
-    def getLeftWheelValue(self):
-        return self.leftWheelValue
-
-    def setLeftWheelValue(self, value: int):
-        self.leftWheelValue = value
-    
-    def getRightWheelValue(self):
-        return self.rightWheelValue
-
-    def setRightWheelValue(self, value: int):
-        self.rightWheelValue = value
-
-    def getWheelsValue(self):
-        return self.leftWheelValue, self.rightWheelValue
-
-    def setWheelsValue(self, leftValue: int, rightValue: int):
-        self.leftWheelValue, self.rightWheelValue = leftValue, rightValue
-    
-    def getSpeed(self):
-        return self.speed
-
-    def setSpeed(self, value: int):
-        self.speed = value
-
-'''
-
-class StateUpdateThread(threading.Thread):
-    def __init__(self):
-        super().__init__()
-        self.voltage = 0.0
-        self.cpu = 0.0
-        self.memory = 0.0
-        self.disk = 0.0
-        self.isRunning = True
-    
-    def run(self):
-        while self.isRunning is True:
-            self.voltage += 0.1
-            self.cpu += 0.1
-            self.memory += 0.1
-            self.disk += 0.1
-            time.sleep(0.5)
-
-    def getState(self):
-        return self.voltage, self.cpu, self.memory, self.disk
-
-    def setIsRunning(self, isRunning):
-        self.isRunning = isRunning
-
-class JetbotInformation:
-    def __init__(self):
-        self.voltage = 0.0
-        self.cpu = 0.0
-        self.memory = 0.0
-        self.disk = 0.0
-
-        self.leftWheelValue = 0
-        self.rightWheelValue = 0
-        self.speed = 0
-
-    def updateInformation(self, state: tuple):
-        self.voltage, self.cpu, self.memory, self.disk = state
-
-    def getVoltage(self):
-        return self.voltage
-    
-    def getCPU(self):
-        return self.cpu
-
-    def getMemory(self):
-        return self.memory
-
-    def getDisk(self):
-        return self.disk
-
-    def getLeftWheelValue(self):
-        return self.leftWheelValue
-
-    def setLeftWheelValue(self, value: int):
-        self.leftWheelValue = value
-    
-    def getRightWheelValue(self):
-        return self.rightWheelValue
-
-    def setRightWheelValue(self, value: int):
-        self.rightWheelValue = value
-
-    def getWheelsValue(self):
-        return self.leftWheelValue, self.rightWheelValue
-
-    def setWheelsValue(self, leftValue: int, rightValue: int):
-        self.leftWheelValue, self.rightWheelValue = leftValue, rightValue
-    
-    def getSpeed(self):
-        return self.speed
-
-    def setSpeed(self, value: int):
-        self.speed = value
 
 class BotLine:
     packetQueue = Queue()
@@ -200,6 +36,11 @@ class BotLine:
         packet = OutputPacket()
         packet.writeCommand(MessageType.CONNECT)
         self.networkManager.sendTo(packet, SocketAddress(HOST, PORT))
+    
+    def disconnect(self):
+        print("disconnect")
+        self.isConnected = False
+        self.connecting()
 
     def onUpdate(self, elapsedTime):
         # 패킷 처리
@@ -207,12 +48,15 @@ class BotLine:
         self.processIncomingPackets()
 
         if self.isConnected is False:
+            self.information.controlJetbot()
             self.cycleTime += elapsedTime
             if self.cycleTime >= self.connectingDelay:
                 print("re-send connect packet")
                 self.connecting()
                 self.cycleTime = 0.0
         else:
+            self.information.setWheelsValue(0, 0)
+            self.information.controlJetbot()
             self.cycleTime = 0.0
             self.timeout += elapsedTime
             if self.timeout >= self.maxTimeout:
@@ -245,16 +89,13 @@ class BotLine:
             self.processPacket(InputPacket(packet), SocketAddress(address[0], address[1]))
 
     def processPacket(self, inputPacket: InputPacket, address: SocketAddress):
-        print(self.timeout)
         self.timeout = 0.0
         command = inputPacket.readCommand()
         if command == MessageType.CONNECT:
-            print("connect")
+            print("connected success")
             self.isConnected = True
         elif command == MessageType.DISCONNECT:
-            print("disconnect")
-            self.isConnected = False
-            self.connecting()
+            self.disconnect()
         elif command == MessageType.INFORMATION_REQUEST:
             packet = OutputPacket()
 
@@ -269,3 +110,5 @@ class BotLine:
             packet.writeUInt16(self.information.getSpeed())
             
             self.networkManager.sendTo(packet, address)
+        elif command == MessageType.CONTROL:
+            pass
