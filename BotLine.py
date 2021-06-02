@@ -11,7 +11,7 @@ from Packet import *
 
 
 
-HOST = '14.44.60.68'
+HOST = '127.0.0.1'
 PORT = 8000
 
 '''
@@ -201,20 +201,20 @@ class BotLine:
         packet.writeCommand(MessageType.CONNECT)
         self.networkManager.sendTo(packet, SocketAddress(HOST, PORT))
 
-    def onUpdate(self):
+    def onUpdate(self, elapsedTime):
         # 패킷 처리
         self.information.updateInformation(self.stateThread.getState())
         self.processIncomingPackets()
 
         if self.isConnected is False:
-            self.cycleTime += time.process_time()
+            self.cycleTime += elapsedTime
             if self.cycleTime >= self.connectingDelay:
                 print("re-send connect packet")
                 self.connecting()
                 self.cycleTime = 0.0
         else:
             self.cycleTime = 0.0
-            self.timeout += time.process_time()
+            self.timeout += elapsedTime
             if self.timeout >= self.maxTimeout:
                 self.isConnected = False
                 self.connecting()
