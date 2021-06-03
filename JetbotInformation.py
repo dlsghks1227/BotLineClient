@@ -1,12 +1,15 @@
 import threading
 import time
 import subprocess
+
 from ina219 import *
+from jetbot import Robot
 
 class StateUpdateThread(threading.Thread):
     def __init__(self):
         super().__init__()
         self.ina219 = INA219(addr=0x41)
+        self.robot = Robot()
         self.voltage = 0.0
         self.cpu = 0.0
         self.memory = 0.0
@@ -54,7 +57,10 @@ class JetbotInformation:
         self.voltage, self.cpu, self.memory, self.disk = state
 
     def controlJetbot(self):
-        pass
+        speedOffset = (self.speed * 0.5)
+        leftOffset = (self.leftWheelValue * 0.1) * speedOffset
+        rightOffset = (self.leftWheelValue * 0.1) * speedOffset
+        self.robot.set_motors(leftOffset, rightOffset)
 
     def getVoltage(self):
         return self.voltage

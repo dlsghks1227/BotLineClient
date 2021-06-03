@@ -48,6 +48,7 @@ class BotLine:
         self.processIncomingPackets()
 
         if self.isConnected is False:
+            self.information.setSpeed(0)
             self.information.controlJetbot()
             self.cycleTime += elapsedTime
             if self.cycleTime >= self.connectingDelay:
@@ -55,7 +56,6 @@ class BotLine:
                 self.connecting()
                 self.cycleTime = 0.0
         else:
-            self.information.setWheelsValue(0, 0)
             self.information.controlJetbot()
             self.cycleTime = 0.0
             self.timeout += elapsedTime
@@ -111,4 +111,9 @@ class BotLine:
             
             self.networkManager.sendTo(packet, address)
         elif command == MessageType.CONTROL:
-            pass
+            speed = inputPacket.readUInt32()
+            leftWheel = inputPacket.readUInt32()
+            rightWpeed = inputPacket.readUInt32()
+            self.information.setSpeed(speed)
+            self.information.setSpeed(leftWheel)
+            self.information.setSpeed(rightWpeed)
