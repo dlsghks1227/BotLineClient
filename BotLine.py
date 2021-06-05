@@ -29,7 +29,6 @@ class BotLine:
         self.isConnected = False
         self.timeout = 0.0
         self.maxTimeout = 5.0
-        self.cycleTime = 0.0
         self.connectingDelay = 2.0
     
     def connecting(self):
@@ -39,6 +38,7 @@ class BotLine:
     
     def disconnect(self):
         print("disconnect")
+        self.timeout = 0.0
         self.isConnected = False
         self.connecting()
 
@@ -50,14 +50,13 @@ class BotLine:
         if self.isConnected is False:
             self.information.setSpeed(0)
             self.information.controlJetbot()
-            self.cycleTime += elapsedTime
-            if self.cycleTime >= self.connectingDelay:
+            self.timeout += elapsedTime
+            if self.timeout >= self.connectingDelay:
                 print("re-send connect packet")
                 self.connecting()
-                self.cycleTime = 0.0
+                self.timeout = 0.0
         else:
             self.information.controlJetbot()
-            self.cycleTime = 0.0
             self.timeout += elapsedTime
             if self.timeout >= self.maxTimeout:
                 self.isConnected = False
@@ -93,6 +92,15 @@ class BotLine:
         command = inputPacket.readCommand()
         if command == MessageType.CONNECT:
             print("connected success")
+
+            objectHash = inputPacket.readUInt64()
+            self.information.setObjectHash(objectHash)
+            aaaa = inputPacket.readUInt32()
+
+            print(objectHash)
+            print(aaaa)
+
+            self.timeout = 0.0
             self.isConnected = True
         elif command == MessageType.DISCONNECT:
             self.disconnect()

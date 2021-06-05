@@ -44,6 +44,7 @@ class StateUpdateThread(threading.Thread):
 
 class JetbotInformation:
     def __init__(self):
+        self.objectHash = 0
         self.voltage = 0.0
         self.cpu = 0.0
         self.memory = 0.0
@@ -73,6 +74,12 @@ class JetbotInformation:
 
     def getDisk(self):
         return self.disk
+
+    def getObjectHash(self):
+        return self.objectHash
+
+    def setObjectHash(self, objectHash):
+        self.objectHash = objectHash
 
     def getLeftWheelValue(self):
         return self.leftWheelValue

@@ -22,7 +22,7 @@ class OutputPacket(Packet):
     def __init__(self):
         self.data = bytearray(1)
         self.packetHead = 1
-        struct.pack_into('!B', self.data, 0, OBJECTTYPE_JETBOT)
+        struct.pack_into('<B', self.data, 0, OBJECTTYPE_JETBOT)
 
     def writeCommand(self, messageType: MessageType):
         self.writeUInt8(messageType)
@@ -60,7 +60,7 @@ class InputPacket(Packet):
         return self.readUInt8()
 
     def read(self, dataType: str, size: int):
-        data = struct.unpack_from('!' + dataType, self.data, self.packetHead)[0]
+        data = struct.unpack_from('<' + dataType, self.data, self.packetHead)[0]
         self.packetHead += size
         return data
 
