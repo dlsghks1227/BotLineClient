@@ -34,6 +34,14 @@ class BotLine:
 
         self.timeout += elapsedTime
 
+        # if self.isConnected is False:
+        #     self.information.setSpeed(0)
+        #     self.information.controlJetbot()
+        #     self.timeout += elapsedTime
+        # else:
+        #     self.information.controlJetbot()
+        #     self.timeout += elapsedTime
+
     def onDestory(self):
         del self.networkManager
 

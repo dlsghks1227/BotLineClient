@@ -14,6 +14,7 @@ class JetbotObjectState(ObjectState):
     def __init__(self):
         super().__init__()
         
+        self.isStop = False
         self.leftWheelValue = 0
         self.rightWheelValue = 0
         self.speed = 0
@@ -25,4 +26,4 @@ class XavierObjectState(ObjectState):
     def __init__(self):
         super().__init__()
 
-        self.isStop = 0
+        self.isAllStop = 0

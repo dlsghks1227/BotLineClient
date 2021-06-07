@@ -9,6 +9,8 @@ class MessageType:
 
     CONNECT_CHECK = 0x04
 
+    ALL_STOP = 0x05
+
     DEFAULT = 0xFF
 
 class MoveState:

@@ -16,10 +16,24 @@ class BotLineOfXavier(BotLine):
         self.stateThread = StateUpdateThread()
         self.stateThread.start()
 
+        self.wasSent = True
+        self.findStopSign = 0
+
     def onUpdate(self, elapsedTime):
         super().onUpdate(elapsedTime)
 
         self.objectState.update(self.stateThread.getState())
+
+        if self.findStopSign != self.objectState.isAllStop:
+            self.findStopSign = self.objectState.isAllStop
+            self.wasSent = False
+
+        if not self.wasSent:
+            packet = OutputPacket(OBJECTTYPE)
+            packet.writeCommand(MessageType.ALL_STOP)
+            packet.writeUInt8(self.objectState.isAllStop)
+            self.networkManager.sendTo(packet, SocketAddress(self.host, self.port))
+            self.wasSent = True
 
     def onDestory(self):
         self.stateThread.setIsRunning(False)
