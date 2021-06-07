@@ -1,7 +1,5 @@
-import struct
 import time
 from BotLine import BotLine
-from SocketAddress import SocketAddress
 from Packet import *
 
 # https://docs.python.org/ko/3/library/struct.html

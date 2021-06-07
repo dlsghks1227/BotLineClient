@@ -11,6 +11,10 @@ class MessageType:
 
     CONNECT_CHECK = 4
 
+    MASTER_STOP = 5
+
+    DEFAULT = 0xFF
+
 class Packet:
     data = bytearray(0)
     packetHead = 0

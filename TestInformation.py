@@ -1,6 +1,8 @@
 import threading
 import time
 
+from Information import Information
+
 
 class StateUpdateThread(threading.Thread):
     def __init__(self):
@@ -13,10 +15,10 @@ class StateUpdateThread(threading.Thread):
     
     def run(self):
         while self.isRunning is True:
-            self.voltage += 0.1
-            self.cpu += 0.1
-            self.memory += 0.1
-            self.disk += 0.1
+            self.voltage += 0.01
+            self.cpu += 0.01
+            self.memory += 0.01
+            self.disk += 0.01
             time.sleep(0.5)
 
     def getState(self):
@@ -25,7 +27,7 @@ class StateUpdateThread(threading.Thread):
     def setIsRunning(self, isRunning):
         self.isRunning = isRunning
 
-class JetbotInformation:
+class JetbotInformation(Information):
     def __init__(self):
         self.objectHash = 0
         self.voltage = 0.0
@@ -42,45 +44,3 @@ class JetbotInformation:
     
     def controlJetbot(self):
         pass
-
-    def getVoltage(self):
-        return self.voltage
-    
-    def getCPU(self):
-        return self.cpu
-
-    def getMemory(self):
-        return self.memory
-
-    def getDisk(self):
-        return self.disk
-
-    def getObjectHash(self):
-        return self.objectHash
-
-    def setObjectHash(self, objectHash):
-        self.objectHash = objectHash
-
-    def getLeftWheelValue(self):
-        return self.leftWheelValue
-
-    def setLeftWheelValue(self, value: int):
-        self.leftWheelValue = value
-    
-    def getRightWheelValue(self):
-        return self.rightWheelValue
-
-    def setRightWheelValue(self, value: int):
-        self.rightWheelValue = value
-
-    def getWheelsValue(self):
-        return self.leftWheelValue, self.rightWheelValue
-
-    def setWheelsValue(self, leftValue: int, rightValue: int):
-        self.leftWheelValue, self.rightWheelValue = leftValue, rightValue
-    
-    def getSpeed(self):
-        return self.speed
-
-    def setSpeed(self, value: int):
-        self.speed = value
