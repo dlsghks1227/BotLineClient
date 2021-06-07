@@ -1,19 +1,23 @@
 import struct
 
-OBJECTTYPE_JETBOT = 1
+OBJECTTYPE = 1
 
 class MessageType:
-    CONNECT = 0
-    DISCONNECT = 1
+    CONNECT = 0x00
+    DISCONNECT = 0x01
 
-    INFORMATION_REQUEST = 2
-    CONTROL = 3
+    INFORMATION_REQUEST = 0x02
+    CONTROL = 0x03
 
-    CONNECT_CHECK = 4
+    CONNECT_CHECK = 0x04
 
-    MASTER_STOP = 5
+    MASTER_STOP = 0x05
 
     DEFAULT = 0xFF
+
+class MoveState:
+    GO = 0x00
+    STOP = 0x01
 
 class Packet:
     data = bytearray(0)
@@ -26,7 +30,7 @@ class OutputPacket(Packet):
     def __init__(self):
         self.data = bytearray(1)
         self.packetHead = 1
-        struct.pack_into('<B', self.data, 0, OBJECTTYPE_JETBOT)
+        struct.pack_into('<B', self.data, 0, OBJECTTYPE)
 
     def writeCommand(self, messageType: MessageType):
         self.writeUInt8(messageType)

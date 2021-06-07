@@ -1,3 +1,5 @@
+from Packet import MoveState
+
 class Information:
     def __init__(self):
         self.objectHash = 0
@@ -9,6 +11,8 @@ class Information:
         self.leftWheelValue = 0
         self.rightWheelValue = 0
         self.speed = 0
+
+        self.isMasterStop = MoveState.GO
 
     def getVoltage(self):
         return self.voltage
@@ -51,3 +55,9 @@ class Information:
 
     def setSpeed(self, value: int):
         self.speed = value
+
+    def getIsMasterStop(self):
+        return self.isMasterStop
+    
+    def setIsMasterStop(self, stop: MoveState):
+        self.isMasterStop = stop

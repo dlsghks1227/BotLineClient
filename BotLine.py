@@ -90,20 +90,17 @@ class BotLine:
     def processPacket(self, inputPacket: InputPacket, address: SocketAddress):
         self.timeout = 0.0
         command = inputPacket.readCommand()
-        if command == MessageType.CONNECT:
-            print("connected success")
 
+        if command == MessageType.CONNECT:
             objectHash = inputPacket.readUInt64()
             self.information.setObjectHash(objectHash)
-            aaaa = inputPacket.readUInt32()
+            print("connected success: ", objectHash)
 
-            print(objectHash)
-            print(aaaa)
-
-            self.timeout = 0.0
             self.isConnected = True
+
         elif command == MessageType.DISCONNECT:
             self.disconnect()
+
         elif command == MessageType.INFORMATION_REQUEST:
             packet = OutputPacket()
 
@@ -116,8 +113,10 @@ class BotLine:
             packet.writeUInt16(self.information.getLeftWheelValue())
             packet.writeUInt16(self.information.getRightWheelValue())
             packet.writeUInt16(self.information.getSpeed())
+            packet.writeUInt8(self.information.getIsMasterStop())
             
             self.networkManager.sendTo(packet, address)
+
         elif command == MessageType.CONTROL:
             speed = inputPacket.readUInt32()
             leftWheel = inputPacket.readUInt32()
@@ -125,3 +124,7 @@ class BotLine:
             self.information.setSpeed(speed)
             self.information.setSpeed(leftWheel)
             self.information.setSpeed(rightWpeed)
+
+        elif command == MessageType.MASTER_STOP:
+            isStop = inputPacket.readUInt8()
+            self.information.setIsMasterStop(isStop)

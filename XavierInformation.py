@@ -1,6 +1,9 @@
+from Packet import MoveState
 import threading
 import time
 import subprocess
+
+from Information import Information
 
 class StateUpdateThread(threading.Thread):
     def __init__(self):
@@ -37,12 +40,20 @@ class StateUpdateThread(threading.Thread):
         cmd = "df -h | awk '$NF==\"/\"{printf \"%.2f\", $3 / $2 * 100}'"
         return float(subprocess.check_output(cmd, shell=True))
 
-class JetbotInformation:
+class JetbotInformation(Information):
     def __init__(self):
-        pass
+        super().__init__()
+        self.wasSend = False
+        self.isStop = MoveState.GO
 
     def updateInformation(self, state: tuple):
         self.voltage, self.cpu, self.memory, self.disk = state
 
     def controlJetbot(self):
-        pass
+        if self.isStop != self.isMasterStop:
+            self.isStop = self.isMasterStop
+            self.wasSend = False
+            
+        if self.wasSend:
+            # send
+            wasSend = True

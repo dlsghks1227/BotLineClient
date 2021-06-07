@@ -29,16 +29,8 @@ class StateUpdateThread(threading.Thread):
 
 class JetbotInformation(Information):
     def __init__(self):
-        self.objectHash = 0
-        self.voltage = 0.0
-        self.cpu = 0.0
-        self.memory = 0.0
-        self.disk = 0.0
-
-        self.leftWheelValue = 0
-        self.rightWheelValue = 0
-        self.speed = 0
-
+        super().__init__()
+        
     def updateInformation(self, state: tuple):
         self.voltage, self.cpu, self.memory, self.disk = state
     
