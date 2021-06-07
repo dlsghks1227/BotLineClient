@@ -1,9 +1,6 @@
 import threading
 import time
 
-from Information import Information
-
-
 class StateUpdateThread(threading.Thread):
     def __init__(self):
         super().__init__()
@@ -14,7 +11,7 @@ class StateUpdateThread(threading.Thread):
         self.isRunning = True
     
     def run(self):
-        while self.isRunning is True:
+        while self.isRunning:
             self.voltage += 0.01
             self.cpu += 0.01
             self.memory += 0.01
@@ -26,13 +23,3 @@ class StateUpdateThread(threading.Thread):
 
     def setIsRunning(self, isRunning):
         self.isRunning = isRunning
-
-class JetbotInformation(Information):
-    def __init__(self):
-        super().__init__()
-        
-    def updateInformation(self, state: tuple):
-        self.voltage, self.cpu, self.memory, self.disk = state
-    
-    def controlJetbot(self):
-        pass

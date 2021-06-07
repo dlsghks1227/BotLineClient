@@ -6,11 +6,15 @@ from queue import Queue
 
 
 class NetworkManager:
-    def __init__(self, bindAddress: SocketAddress, bufferSize: int = 2048):
+    def __init__(self, objectType: int, address: SocketAddress, bufferSize: int = 2048):
         self.bufferSize = bufferSize
 
+        self.objectType = objectType
+
+        self.host = address.ip
+        self.port = address.port
+
         self.udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.udpSocket.bind(bindAddress.getAddressAndPort())
         self.udpSocket.setblocking(False)
 
     def __del__(self):
@@ -28,3 +32,8 @@ class NetworkManager:
             return -1
         except BlockingIOError:
             return None
+
+    def connecting(self):
+        packet = OutputPacket(self.objectType)
+        packet.writeCommand(MessageType.CONNECT)
+        self.sendTo(packet, SocketAddress(self.host, self.port))

@@ -1,7 +1,5 @@
 import struct
 
-OBJECTTYPE = 1
-
 class MessageType:
     CONNECT = 0x00
     DISCONNECT = 0x01
@@ -10,8 +8,6 @@ class MessageType:
     CONTROL = 0x03
 
     CONNECT_CHECK = 0x04
-
-    MASTER_STOP = 0x05
 
     DEFAULT = 0xFF
 
@@ -27,10 +23,10 @@ class Packet:
         return self.data
 
 class OutputPacket(Packet):
-    def __init__(self):
+    def __init__(self, objectType: int):
         self.data = bytearray(1)
         self.packetHead = 1
-        struct.pack_into('<B', self.data, 0, OBJECTTYPE)
+        struct.pack_into('<B', self.data, 0, objectType)
 
     def writeCommand(self, messageType: MessageType):
         self.writeUInt8(messageType)
