@@ -1,9 +1,10 @@
-from Packet import *
+from .Packet import *
 from queue import Queue
 
-from SocketAddress import SocketAddress
-from NetworkManager import NetworkManager
-from Packet import *
+import time
+
+from .SocketAddress import SocketAddress
+from .NetworkManager import NetworkManager
 
 #from JetbotInformation import StateUpdateThread, JetbotInformation
 
@@ -32,7 +33,7 @@ class BotLine:
         self.processIncomingPackets()
         self.connectionManagement()
 
-        self.timeout += elapsedTime
+        self.timeout += time.clock_getres(time.CLOCK_PROCESS_CPUTIME_ID) * 1e8
 
         # if self.isConnected is False:
         #     self.information.setSpeed(0)
@@ -58,7 +59,6 @@ class BotLine:
 
                 # 재 연결 시도
                 self.networkManager.connecting()
-
                 self.timeout = 0.0
                 
     def processIncomingPackets(self):

@@ -1,19 +1,19 @@
-from SocketAddress import SocketAddress
-from Packet import *
+from .SocketAddress import SocketAddress
+from .Packet import *
 
-from StateUpdateThread import StateUpdateThread
-from ObjectState import XavierObjectState as ObjectState
+from .StateUpdateThread import StateUpdateThread
+from .ObjectState import XavierObjectState as ObjectState
 
-from BotLine import BotLine
+from .BotLine import BotLine
 
 OBJECTTYPE = 3
 
 class BotLineOfXavier(BotLine):
     def __init__(self, ip: str, port:int):
-        super().__init__(ip, port)
+        super().__init__(OBJECTTYPE, ip, port)
 
         self.objectState = ObjectState()
-        self.stateThread = StateUpdateThread()
+        self.stateThread = StateUpdateThread(OBJECTTYPE)
         self.stateThread.start()
 
         self.wasSent = True
@@ -31,9 +31,10 @@ class BotLineOfXavier(BotLine):
         if not self.wasSent:
             packet = OutputPacket(OBJECTTYPE)
             packet.writeCommand(MessageType.ALL_STOP)
-            packet.writeUInt8(self.objectState.isAllStop)
+            packet.writeUInt16(self.objectState.isAllStop)
             self.networkManager.sendTo(packet, SocketAddress(self.host, self.port))
             self.wasSent = True
+            print("Send")
 
     def onDestory(self):
         self.stateThread.setIsRunning(False)

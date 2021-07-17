@@ -2,7 +2,7 @@ import threading
 import time
 import subprocess
 
-from ina219 import *
+from .ina219 import *
 
 class StateUpdateThread(threading.Thread):
     def __init__(self, objectType: int):
