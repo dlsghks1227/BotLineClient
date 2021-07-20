@@ -14,9 +14,9 @@ class MessageType(Enum):
     DEFAULT = 0xFF
     
 class ObjectType(Enum):
-    Jetbot = 0x01
-    Xavier = 0x02
-    Test = 0x03
+    JETBOT = 0x01
+    XAVIER = 0x02
+    TEST = 0x01
 
 class MoveState:
     GO = 0x00

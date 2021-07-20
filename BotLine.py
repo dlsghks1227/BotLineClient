@@ -1,3 +1,4 @@
+'''
 from .Packet import *
 from queue import Queue
 
@@ -8,7 +9,7 @@ from .NetworkManager import NetworkManager
 
 #from JetbotInformation import StateUpdateThread, JetbotInformation
 
-class BotLine:
+class BotLinea:
     def __init__(self, objectType: int, ip: str, port:int):
         self.packetQueue = Queue()
 
@@ -82,4 +83,36 @@ class BotLine:
 
     def processPacket(self, inputPacket: InputPacket, address: SocketAddress):
         self.timeout = 0.0
-            
+'''
+import time
+
+from Network.SocketAddress import *
+from Network.PacketType import *
+
+from Object.BotLineObject import BotLineObject
+from Object.BotLineObjectFactory import BotLineFactory
+
+class BotLine:
+    def __init__(self, objectType: str, host: str, port: int) -> None:
+        self.__factory = BotLineFactory(SocketAddress(host, port))
+        self.__botLineObject = self.__factory.getBotLineObject(ObjectType[objectType])
+
+        self.__currentTime = 0.0
+        self.__elapsedTime = 0.0
+    
+    def onUpdate(self) -> None:
+        # Windows
+        self.__currentTime = time.perf_counter()
+        self.__botLineObject.onUpdate(self.__elapsedTime)
+        self.__elapsedTime = time.perf_counter() - self.__currentTime
+
+        # Linux
+        #self.__elapsedTime = time.clock_getres(time.CLOCK_PROCESS_CPUTIME_ID) * 1e8
+        #self.__botLineObject.onUpdate(self.__elapsedTime)
+
+    def onDestory(self) -> None:
+        self.__botLineObject.onDestory()
+    
+    @property
+    def botLineObject(self) -> BotLineObject:
+        return self.__botLineObject

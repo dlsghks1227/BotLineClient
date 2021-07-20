@@ -2,8 +2,6 @@ import socket
 
 from Network.SocketAddress import SocketAddress
 from Network.Packet import *
-from queue import Queue
-
 
 class NetworkManager:
     def __init__(self, address: SocketAddress, bufferSize: int = 2048) -> None:
@@ -15,8 +13,8 @@ class NetworkManager:
     def __del__(self) -> None:
         self.__udpSocket.close()
 
-    def sendTo(self, packet: OutputPacket, address: SocketAddress) -> None:
-        self.__udpSocket.sendto(packet.getData(), address.getAddressAndPort())
+    def sendTo(self, outputPacket: OutputPacket, address: SocketAddress) -> None:
+        self.__udpSocket.sendto(outputPacket.data, address.getAddress())
 
     def receiveFrom(self) -> tuple or int or None:
         try:

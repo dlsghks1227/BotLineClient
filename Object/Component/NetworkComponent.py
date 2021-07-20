@@ -1,3 +1,5 @@
+from queue import Queue
+
 from Network.PacketProcessingStore import PacketProcessingStore
 from Network.Packet import InputPacket, OutputPacket
 from Network.PacketType import *
@@ -8,15 +10,16 @@ from Network.NetworkManager import *
 from Lib.Log import Log
 
 class NetworkComponent:
-    def __init__(self, type: ObjectType, hostAddress: SocketAddress) -> None:
+    def __init__(self, objectType: ObjectType, hostAddress: SocketAddress) -> None:
         self.__isConnected = False
         self.__timeout = 0.0
         self.__maxTimeout = 5.0
 
-        self.__objectType = type
 
         self.__hostAddress = hostAddress
         self.__packetQueue = Queue()
+
+        self._objectType = objectType
 
         self._networkManager = NetworkManager(hostAddress)
         self.connecting()
@@ -77,7 +80,7 @@ class NetworkComponent:
             self.connecting()
 
     def connecting(self) -> None:
-        outputPacket = OutputPacket(self.__objectType)
+        outputPacket = OutputPacket(self._objectType)
         outputPacket.writeCommand(MessageType.CONNECT)
         self._networkManager.sendTo(outputPacket, self.__hostAddress)
 
@@ -86,10 +89,6 @@ class NetworkComponent:
     @property
     def isConnected(self) -> bool:
         return self.__isConnected
-
-    @property
-    def objectType(self) -> ObjectType:
-        return self.__objectType
 
     def connect(self, inputPacket: InputPacket, address: SocketAddress) -> OutputPacket:
         self.__isConnected = True

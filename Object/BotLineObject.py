@@ -1,14 +1,10 @@
-from Object.Component.TestStateComponent import TestStateComponent
-from Object.Component.TestNetworkComponent import TestNetworkComponent
-
-from Object.Component.NetworkComponent import *
-from Object.Component.StateComponent import *
+from Network.SocketAddress import *
 
 from Lib.Log import Log
 
 class BotLineObject:
-    def __init__(self) -> None:
-        pass
+    def __init__(self, address: SocketAddress) -> None:
+        self._address = address
 
     def onUpdate(self, elapsedTime: float) -> None:
         pass

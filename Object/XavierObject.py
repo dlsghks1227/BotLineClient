@@ -1,7 +1,5 @@
-from Network.SocketAddress import *
-
-from Object.Component.Test.TestStateComponent import TestStateComponent
-from Object.Component.Test.TestNetworkComponent import TestNetworkComponent
+from Object.Component.Xavier.XavierStateComponent import XavierStateComponent
+from Object.Component.Xavier.XavierNetworkComponent import XavierNetworkComponent
 
 from Object.BotLineObject import *
 from Object.Component.NetworkComponent import *
@@ -9,11 +7,11 @@ from Object.Component.StateComponent import *
 
 from Lib.Log import Log
 
-class TestObject(BotLineObject):
+class XavierObject(BotLineObject):
     def __init__(self, address: SocketAddress) -> None:
         super().__init__(address)
-        self.networkComponent = TestNetworkComponent(ObjectType.TEST, self._address)
-        self.stateComponent = TestStateComponent()
+        self.networkComponent = XavierNetworkComponent(ObjectType.XAVIER, self._address)
+        self.stateComponent = XavierStateComponent()
         self.stateComponent.start()
 
     def onUpdate(self, elapsedTime: float) -> None:
@@ -26,6 +24,3 @@ class TestObject(BotLineObject):
         self.stateComponent.isRunning = False
         self.stateComponent.join()
         self.networkComponent.onDestory()
-
-    def AccessTest(self) -> None:
-        Log("Access Test")
