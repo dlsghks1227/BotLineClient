@@ -1,5 +1,6 @@
-from Network.SocketAddress import SocketAddress
 from typing import Callable
+
+from Network.SocketAddress import SocketAddress
 
 from Network.PacketType import *
 from Network.Packet import *

@@ -25,17 +25,33 @@ class RobotComponent:
     def onDestory(self) -> None:
         pass
 
+    @property
+    def robot(self) -> Robot:
+        return self.__robot
+
     @robot.setter
     def robot(self, value: Robot) -> None:
         self.__robot = value
 
+    @property
+    def isStop(self) -> bool:
+        return self.__isStop
+
     @isStop.setter
     def isStop(self, value: bool) -> None:
         self.__isStop = value
+        
+    @property
+    def leftWheel(self) -> float:
+        return self.__leftWheel
 
     @leftWheel.setter
     def leftWheel(self, value: float) -> None:
         self.__leftWheel = value
+
+    @property
+    def rightWheel(self) -> float:
+        return self.__rightWheel
     
     @rightWheel.setter
     def rightWheel(self, value: float) -> None:
