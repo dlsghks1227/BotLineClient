@@ -10,7 +10,7 @@ class NetworkManager:
         self.__udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.__udpSocket.setblocking(False)
 
-    def __del__(self) -> None:
+    def onDestory(self) -> None:
         self.__udpSocket.close()
 
     def sendTo(self, outputPacket: OutputPacket, address: SocketAddress) -> None:

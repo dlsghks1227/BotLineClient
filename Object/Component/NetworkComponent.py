@@ -35,7 +35,7 @@ class NetworkComponent:
         self.__timeout += elapsedTime
 
     def onDestory(self) -> None:
-        del self._networkManager
+        self._networkManager.onDestory()
 
     def processIncomingPackets(self):
         self.readIncomingPacketIntoQueue()
