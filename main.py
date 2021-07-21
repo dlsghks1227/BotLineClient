@@ -5,7 +5,7 @@ import time
 from BotLine import *
 from Lib.Log import Log
 
-if __name__ != "__main__":
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--host', dest='host', type=str, default='127.0.0.1', help='Server ip')
     parser.add_argument('--port', dest='port', type=int, default=8000, help='Server port')

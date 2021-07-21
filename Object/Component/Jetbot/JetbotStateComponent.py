@@ -3,12 +3,14 @@ import subprocess
 from Object.Component.StateComponent import *
 
 from Lib.ina219 import *
+from Lib.ads1115 import *
 
 class JetbotStateComponent(StateComponent):
     def __init__(self) -> None:
         super().__init__()
 
         self.__ina219 = INA219(addr=0x41)
+        # self.__ads = ADS1115()
 
     def onUpdate(self) -> None:
         super().onUpdate()
