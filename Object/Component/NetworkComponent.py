@@ -11,15 +11,14 @@ from Lib.Log import Log
 
 class NetworkComponent:
     def __init__(self, objectType: ObjectType, hostAddress: SocketAddress) -> None:
+        self._objectType = objectType
+        self.__hostAddress = hostAddress
+
         self.__isConnected = False
         self.__timeout = 0.0
         self.__maxTimeout = 5.0
 
-
-        self.__hostAddress = hostAddress
         self.__packetQueue = Queue()
-
-        self._objectType = objectType
 
         self._networkManager = NetworkManager(hostAddress)
         self.connecting()
@@ -37,11 +36,11 @@ class NetworkComponent:
     def onDestory(self) -> None:
         self._networkManager.onDestory()
 
-    def processIncomingPackets(self):
+    def processIncomingPackets(self) -> None:
         self.readIncomingPacketIntoQueue()
         self.processQueuedPackets()
 
-    def readIncomingPacketIntoQueue(self):
+    def readIncomingPacketIntoQueue(self) -> None:
         data = self._networkManager.receiveFrom()
 
         if data is not None:
@@ -50,19 +49,19 @@ class NetworkComponent:
                 return
             self.__packetQueue.put(data)
 
-    def processQueuedPackets(self):
+    def processQueuedPackets(self) -> None:
         while not self.__packetQueue.empty():
             packet, address = self.__packetQueue.get()
 
             self.__timeout = 0.0
             self.processPacket(InputPacket(packet), SocketAddress(address[0], address[1]))
     
-    def processPacket(self, inputpacket: InputPacket, address: SocketAddress):
+    def processPacket(self, inputPacket: InputPacket, address: SocketAddress) -> None:
         try:
-            command = MessageType(inputpacket.readCommand())
+            command = MessageType(inputPacket.readCommand())
 
             # 함수 실행
-            outputPacket = self._store.commands[command](inputpacket, address)
+            outputPacket = self._store.run(command, inputPacket, address)
 
             if outputPacket is not None:
                 self._networkManager.sendTo(outputPacket, address)
@@ -84,7 +83,7 @@ class NetworkComponent:
         outputPacket.writeCommand(MessageType.CONNECT)
         self._networkManager.sendTo(outputPacket, self.__hostAddress)
 
-        Log("Conneting...")
+        Log("Connecting...")
 
     @property
     def isConnected(self) -> bool:

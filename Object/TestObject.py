@@ -26,6 +26,3 @@ class TestObject(BotLineObject):
         self.stateComponent.isRunning = False
         self.stateComponent.join()
         self.networkComponent.onDestory()
-
-    def AccessTest(self) -> None:
-        Log("Access Test")

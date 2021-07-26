@@ -11,7 +11,9 @@ class PacketProcessingStore:
 
     def add(self, command: MessageType, handler: Callable[[InputPacket, SocketAddress], OutputPacket]) -> None:
         self.__commands[command] = handler
-
-    @property
-    def commands(self) -> dict:
-        return self.__commands
+        
+    def run(self, command: MessageType, inputPacket: InputPacket, address: SocketAddress) -> OutputPacket:
+        if command in self.__commands:
+            return self.__commands[command](inputPacket, address)
+        else:
+            return None
