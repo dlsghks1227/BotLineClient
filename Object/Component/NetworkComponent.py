@@ -24,8 +24,10 @@ class NetworkComponent:
         self.connecting()
 
         self._store = PacketProcessingStore()
+
         self._store.add(MessageType.CONNECT, self.connect)
         self._store.add(MessageType.DISCONNECT, self.disconnect)
+        self._store.add(MessageType.CONNECT_CHECK, self.connectCheck)
 
     def onUpdate(self, elapsedTime: float) -> None:
         self.processIncomingPackets()
@@ -43,8 +45,8 @@ class NetworkComponent:
     def readIncomingPacketIntoQueue(self) -> None:
         data = self._networkManager.receiveFrom()
 
-        if data is not None:
-            if data == -1:
+        if data[0] is not None:
+            if data[0] == -1:
                 self.__isConnected = False
                 return
             self.__packetQueue.put(data)
@@ -106,3 +108,10 @@ class NetworkComponent:
         Log("Disconnect")
 
         return None
+
+    def connectCheck(self, inputPacket: InputPacket, address: SocketAddress) -> OutputPacket:
+        outputPacket = OutputPacket(self._objectType)
+        outputPacket.writeCommand(MessageType.CONNECT_CHECK)
+
+        return outputPacket
+

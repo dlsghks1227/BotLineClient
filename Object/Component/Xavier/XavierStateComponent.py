@@ -1,5 +1,6 @@
 from Object.Component.StateComponent import *
 
+
 class XavierStateComponent(StateComponent):
     def __init__(self) -> None:
         super().__init__()

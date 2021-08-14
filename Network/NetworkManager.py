@@ -3,6 +3,7 @@ import socket
 from Network.SocketAddress import SocketAddress
 from Network.Packet import *
 
+
 class NetworkManager:
     def __init__(self, address: SocketAddress, bufferSize: int = 2048) -> None:
         self.__bufferSize = bufferSize
@@ -16,12 +17,12 @@ class NetworkManager:
     def sendTo(self, outputPacket: OutputPacket, address: SocketAddress) -> None:
         self.__udpSocket.sendto(outputPacket.data, address.getAddress())
 
-    def receiveFrom(self) -> tuple or int or None:
+    def receiveFrom(self) -> tuple:
         try:
             data, address = self.__udpSocket.recvfrom(self.__bufferSize)
             if len(data) >= 0:
                 return data, address
         except ConnectionResetError:
-            return -1
+            return (-1, )
         except BlockingIOError:
-            return None
+            return (None, )

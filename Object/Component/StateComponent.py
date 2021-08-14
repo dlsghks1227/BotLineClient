@@ -5,6 +5,7 @@ from Network.PacketType import *
 
 from Object.StateValueObject import *
 
+
 class StateComponent(threading.Thread):
     def __init__(self) -> None:
         super().__init__()
