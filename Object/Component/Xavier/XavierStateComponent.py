@@ -8,7 +8,6 @@ class XavierStateComponent(StateComponent):
     def onUpdate(self) -> None:
         super().onUpdate()
 
-        self._state.voltage += 0.001
         self._state.cpu += 0.001
         self._state.memory += 0.001
         self._state.disk += 0.001

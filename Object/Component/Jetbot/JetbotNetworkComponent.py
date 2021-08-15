@@ -8,8 +8,8 @@ class JetbotNetworkComponent(NetworkComponent):
         self.__isStop = False
 
         self.__state = StateValueObject()
-        self._store.add(MessageType.INFORMATION_REQUEST, self.informationRequest)
-        self._store.add(MessageType.ALL_STOP, self.allStop)
+        self._storage.add(MessageType.INFORMATION_REQUEST, self.informationRequest)
+        self._storage.add(MessageType.ALL_STOP, self.allStop)
 
 
     def onUpdate(self, elapsedTime: float) -> None:

@@ -6,7 +6,7 @@ class XavierNetworkComponent(NetworkComponent):
         super().__init__(objectType, hostAddress)
         
         self.__state = StateValueObject()
-        self._store.add(MessageType.INFORMATION_REQUEST, self.informationRequest)
+        self._storage.add(MessageType.INFORMATION_REQUEST, self.informationRequest)
 
     def onUpdate(self, elapsedTime: float) -> None:
         super().onUpdate(elapsedTime)
@@ -21,7 +21,6 @@ class XavierNetworkComponent(NetworkComponent):
         outputPacket = OutputPacket(self._objectType)
 
         outputPacket.writeCommand(MessageType.INFORMATION_REQUEST)
-        outputPacket.writeFloat(self.__state.voltage)
         outputPacket.writeFloat(self.__state.cpu)
         outputPacket.writeFloat(self.__state.memory)
         outputPacket.writeFloat(self.__state.disk)

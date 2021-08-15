@@ -1,6 +1,6 @@
 from queue import Queue
 
-from Network.PacketProcessingStore import PacketProcessingStore
+from Network.PacketProcessingStorage import PacketProcessingStorage
 from Network.Packet import InputPacket, OutputPacket
 from Network.PacketType import *
 from Network.SocketAddress import SocketAddress
@@ -8,6 +8,7 @@ from Network.SocketAddress import SocketAddress
 from Network.NetworkManager import *
 
 from Lib.Log import Log
+
 
 class NetworkComponent:
     def __init__(self, objectType: ObjectType, hostAddress: SocketAddress) -> None:
@@ -23,11 +24,11 @@ class NetworkComponent:
         self._networkManager = NetworkManager(hostAddress)
         self.connecting()
 
-        self._store = PacketProcessingStore()
+        self._storage = PacketProcessingStorage()
 
-        self._store.add(MessageType.CONNECT, self.connect)
-        self._store.add(MessageType.DISCONNECT, self.disconnect)
-        self._store.add(MessageType.CONNECT_CHECK, self.connectCheck)
+        self._storage.add(MessageType.CONNECT, self.connect)
+        self._storage.add(MessageType.DISCONNECT, self.disconnect)
+        self._storage.add(MessageType.CONNECT_CHECK, self.connectCheck)
 
     def onUpdate(self, elapsedTime: float) -> None:
         self.processIncomingPackets()
@@ -63,7 +64,7 @@ class NetworkComponent:
             command = MessageType(inputPacket.readCommand())
 
             # 함수 실행
-            outputPacket = self._store.run(command, inputPacket, address)
+            outputPacket = self._storage.run(command, inputPacket, address)
 
             if outputPacket is not None:
                 self._networkManager.sendTo(outputPacket, address)

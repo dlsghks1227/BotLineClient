@@ -5,7 +5,7 @@ from Network.SocketAddress import SocketAddress
 from Network.PacketType import *
 from Network.Packet import *
 
-class PacketProcessingStore:
+class PacketProcessingStorage:
     def __init__(self) -> None:
         self.__commands = dict()
 
