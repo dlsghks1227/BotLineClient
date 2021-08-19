@@ -4,16 +4,18 @@ from enum import Enum
 class MessageType(Enum):
     CONNECT = 0x00
     DISCONNECT = 0x01
+    CONNECT_CHECK = 0x02
 
-    INFORMATION_REQUEST = 0x02
-    END_DATA = 0x03
+    INFO_CURRENT_STATE = 0x10
+    INFO_JETBOT_POSITION = 0x11
 
-    CONTROL = 0x04
+    JETBOT_CONTROL = 0x20
+    JETBOT_ARRIVED = 0x21
+    JETBOT_ALL_STOP = 0x22
 
-    CONNECT_CHECK = 0x05
+    JETBOT_POSITION_ERROR = 0xE0
 
-    ALL_STOP = 0x06
-
+    END_DATA = 0xFE
     DEFAULT = 0xFF
 
 
@@ -22,8 +24,3 @@ class ObjectType(Enum):
     XAVIER = 0x02
     WEB = 0x03
     TEST = 0x01
-
-
-class MoveState:
-    GO = 0x00
-    STOP = 0x01

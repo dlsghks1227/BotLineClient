@@ -93,17 +93,18 @@ from Object.BotLineObject import BotLineObject
 from Object.BotLineObjectFactory import BotLineFactory
 
 class BotLine:
-    def __init__(self, objectType: str, host: str, port: int) -> None:
+    def __init__(self, objectType: str, host: str, port: int, offset: float = 1.0) -> None:
         self.__factory = BotLineFactory(SocketAddress(host, port))
         self.__botLineObject = self.__factory.getBotLineObject(ObjectType[objectType])
 
         self.__currentTime = 0.0
         self.__elapsedTime = 0.0
+        self.__offset = offset
     
     def onUpdate(self) -> None:
         # Windows
         self.__currentTime = time.perf_counter()
-        self.__botLineObject.onUpdate(self.__elapsedTime)
+        self.__botLineObject.onUpdate(self.__elapsedTime * self.__offset)
         self.__elapsedTime = time.perf_counter() - self.__currentTime
 
         # Linux

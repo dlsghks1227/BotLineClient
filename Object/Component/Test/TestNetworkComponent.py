@@ -1,17 +1,25 @@
-from Object.StateValueObject import StateValueObject
 from Object.Component.NetworkComponent import *
+from Object.Component.Test.TestValueObject import *
+from Object.Component.Jetbot.JetbotValueObject import *
 
 from Network.PacketType import *
 
 from Lib.Log import Log
 
 class TestNetworkComponent(NetworkComponent):
-    def __init__(self, objectType: ObjectType, hostAddress: SocketAddress) -> None:
+    def __init__(self, objectType: ObjectType, hostAddress: SocketAddress, position: JetbotPosition = JetbotPosition.DEFAULT) -> None:
         super().__init__(objectType, hostAddress)
+
+        self.isWorking = False
+        self.isStop = False
+
+        self.position = position
         
-        self.__state = StateValueObject()
-        self._storage.add(MessageType.INFORMATION_REQUEST, self.informationRequest)
-        self._storage.add(MessageType.ALL_STOP, self.allStop)
+        self.__state = TestStateValueObject()
+        self._storage.add(MessageType.INFO_CURRENT_STATE, self.infoCurrentState)
+        self._storage.add(MessageType.JETBOT_CONTROL, self.jetbotControl)
+        self._storage.add(MessageType.JETBOT_ARRIVED, self.jetbotArrived)
+        self._storage.add(MessageType.JETBOT_POSITION_ERROR, self.jetbotPositionError)
 
     def onUpdate(self, elapsedTime: float) -> None:
         super().onUpdate(elapsedTime)
@@ -19,20 +27,34 @@ class TestNetworkComponent(NetworkComponent):
     def onDestory(self) -> None:
         super().onDestory()
 
-    def setObjectState(self, state: StateValueObject) -> None:
+    def setState(self, state: TestStateValueObject) -> None:
         self.__state = state
 
-    def informationRequest(self, inputPacket: InputPacket, address: SocketAddress) -> OutputPacket:
+    def infoCurrentState(self, inputPacket: InputPacket, address: SocketAddress) -> OutputPacket:
         outputPacket = OutputPacket(self._objectType)
 
-        outputPacket.writeCommand(MessageType.INFORMATION_REQUEST)
+        outputPacket.writeCommand(MessageType.INFO_CURRENT_STATE)
         outputPacket.writeFloat(self.__state.voltage)
         outputPacket.writeFloat(self.__state.cpu)
         outputPacket.writeFloat(self.__state.memory)
         outputPacket.writeFloat(self.__state.disk)
 
-        return outputPacket
+        outputPacket.writeUInt8(self.position.value)
 
-    def allStop(self, inputPacket: InputPacket, address: SocketAddress) -> OutputPacket:
-        isStop = inputPacket.readUInt8()
-        Log(f"{isStop}")
+        outputPacket.writeUInt8(self.isWorking)
+        outputPacket.writeUInt8(self.isStop)
+
+        return outputPacket
+    
+    def jetbotControl(self, inputPacket: InputPacket, address: SocketAddress) -> OutputPacket:
+        pos = inputPacket.readUInt8()
+
+        self.position = JetbotPosition(pos)
+        self.isWorking = True
+
+    def jetbotArrived(self, inputPacket: InputPacket, address: SocketAddress) -> OutputPacket:
+        self.isWorking = False
+
+    def jetbotPositionError(self, inputPacket: InputPacket, address: SocketAddress) -> OutputPacket:
+        self.position = JetbotPosition.DEFAULT
+        Log("jetbotPositionError")

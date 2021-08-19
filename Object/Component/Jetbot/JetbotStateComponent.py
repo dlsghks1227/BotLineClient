@@ -1,6 +1,7 @@
 import subprocess
 
 from Object.Component.StateComponent import *
+from Object.Component.Jetbot.JetbotValueObject import *
 
 from Lib.ina219 import *
 from Lib.ads1115 import *
@@ -8,17 +9,18 @@ from Lib.ads1115 import *
 class JetbotStateComponent(StateComponent):
     def __init__(self) -> None:
         super().__init__()
-
+        self.state = JetbotStateValueObject()
+        
         self.__ina219 = INA219(addr=0x41)
         # self.__ads = ADS1115()
 
     def onUpdate(self) -> None:
         super().onUpdate()
 
-        self._state.voltage = self.__ina219.getBusVoltage_V()
-        self._state.cpu = self.loadCPUAverage()
-        self._state.memory = self.loadMemory()
-        self._state.disk = self.loadDisk()
+        self.state.voltage = self.__ina219.getBusVoltage_V()
+        self.state.cpu = self.loadCPUAverage()
+        self.state.memory = self.loadMemory()
+        self.state.disk = self.loadDisk()
 
     def loadCPUAverage(self) -> float:
         cmd = "top -bn1 | grep load | awk '{printf \"%.2f\", $(NF-2)}'"
