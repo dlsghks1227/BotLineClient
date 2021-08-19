@@ -13,6 +13,8 @@ class JetbotNetworkComponent(NetworkComponent):
         self.__state = JetbotStateValueObject()
 
         self._storage.add(MessageType.INFO_CURRENT_STATE, self.infoCurrentState)
+        self._storage.add(MessageType.JETBOT_CONTROL, self.jetbotControl)
+        self._storage.add(MessageType.JETBOT_ARRIVED, self.jetbotArrived)
         self._storage.add(MessageType.INFO_JETBOT_POSITION, self.jetbotControlAllStop)
         self._storage.add(MessageType.JETBOT_POSITION_ERROR, self.jetbotPositionError)
 
