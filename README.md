@@ -4,9 +4,10 @@
 
 임베디드 기기(Jetbot, Xavier 등등)와 서버간의 통신을 하기 위한 클라이언트 제작
 
-## Requirements
+## Tech Stack
 
-Programming language: Python 3.6
+✔️ IDE: Visual Studio Code, PyCharm
+✔️ Programming Language: Python 3.6
 
 ## File structure
 
