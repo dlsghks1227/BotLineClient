@@ -6,8 +6,8 @@
 
 ## Tech Stack
 
-✔️ IDE: Visual Studio Code, PyCharm
-✔️ Programming Language: Python 3.6
+#### ✔️ IDE: Visual Studio Code, PyCharm
+#### ✔️ Programming Language: Python 3.6
 
 ## File structure
 
